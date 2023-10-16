@@ -15,12 +15,10 @@
           };
 
         packages = with pkgs; [
-          dbus.lib
-          dbus.dev
-
-          pkg-config
           rust-bin.nightly.latest.default
           rust-analyzer
+
+          sqlx-cli
         ];
       in
       {
