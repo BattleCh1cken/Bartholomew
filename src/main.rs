@@ -1,3 +1,6 @@
+mod db;
+mod test;
+
 use poise::serenity_prelude as serenity;
 
 struct Data {} // User data, which is stored and accessible in all command invocations
@@ -18,7 +21,7 @@ async fn age(
 
 #[tokio::main]
 async fn main() {
-    dotenv::dotenv().ok();
+    dotenvy::dotenv().ok();
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands: vec![age()],

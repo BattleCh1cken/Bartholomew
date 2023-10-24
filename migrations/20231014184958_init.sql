@@ -21,6 +21,7 @@ create table if not exists users
 create table if not exists scores 
 (
   id integer primary key autoincrement not null,
+  score integer not null,
   user bigint not null, 
   team bigint not null,
   foreign key(user) references users(id),
