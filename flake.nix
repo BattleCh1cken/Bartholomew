@@ -19,6 +19,7 @@
           rust-analyzer
 
           sqlx-cli
+          sqlitebrowser
         ];
       in
       {

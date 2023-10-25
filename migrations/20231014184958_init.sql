@@ -1,7 +1,7 @@
 create table if not exists teams
 (
   id integer primary key autoincrement not null,
-  name string not null,
+  name varchar not null,
   leader bigint not null,
   guild bigint, 
   foreign key(guild) references guilds(id)
@@ -10,12 +10,13 @@ create table if not exists teams
 create table if not exists guilds 
 (
   id bigint primary key not null,
-  name string not null
+  unique(id)
 );
 
 create table if not exists users
 (
-  id bigint primary key not null
+  id bigint primary key not null,
+  unique(id)
 );
 
 create table if not exists scores 
@@ -25,5 +26,6 @@ create table if not exists scores
   user bigint not null, 
   team bigint not null,
   foreign key(user) references users(id),
-  foreign key(team) references teams(id)
+  foreign key(team) references teams(id),
+  unique(user, team)
 );
