@@ -25,7 +25,6 @@ impl BotDb {
 
         Self { db }
     }
-
     pub async fn create_score(&self, user: UserId, guild: GuildId, team_name: &str) {
         self.create_user(user).await;
         let user_id = *user.as_u64() as i64;

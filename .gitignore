@@ -7,3 +7,5 @@ target/
 /target
 .env
 bot.db
+bot.db-shm
+bot.db-wal

@@ -95,7 +95,6 @@ async fn add_to_score(pool: SqlitePool) -> sqlx::Result<()> {
         .get_score(TEST_USER_ID, TEST_GUILD_ID)
         .await
         .unwrap();
-
     assert_eq!(score, 5);
 
     Ok(())
