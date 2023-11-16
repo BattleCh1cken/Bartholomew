@@ -1,7 +1,10 @@
-use anyhow::Result;
 use poise::serenity_prelude::{self as serenity, GuildId, UserId};
 use sqlx::{migrate::MigrateDatabase, sqlite::SqliteConnectOptions, SqlitePool};
 use std::env;
+
+pub mod error;
+
+// TODO: split this into multiple modules
 
 pub struct BotDb {
     db: SqlitePool,
@@ -44,10 +47,10 @@ impl BotDb {
         .unwrap();
     }
 
-    pub async fn get_score(&self, user: UserId, guild: GuildId) -> Option<i64> {
+    pub async fn get_score(&self, user: UserId, guild: GuildId) -> Result<i64, error::BotDbError> {
         let user_id = *user.as_u64() as i64;
         let guild_id = *guild.as_u64() as i64;
-        let score: i64 = sqlx::query!(
+        let score = match sqlx::query!(
             r#"
         select score
         from scores s
@@ -61,19 +64,26 @@ impl BotDb {
         )
         .fetch_one(&self.db)
         .await
-        .unwrap()
-        .score;
+        {
+            Ok(val) => Ok(val.score),
+            Err(_) => Err(error::BotDbError::NoSuchScore),
+        };
 
-        Some(score)
+        score
     }
 
-    pub async fn change_score(&self, user: UserId, guild: GuildId, amount: i32) {
+    pub async fn change_score(
+        &self,
+        user: UserId,
+        guild: GuildId,
+        amount: i32,
+    ) -> Result<(), error::BotDbError> {
         self.create_user(user).await;
 
         let user_id = *user.as_u64() as i64;
         let guild_id = *guild.as_u64() as i64;
 
-        sqlx::query!(
+        match sqlx::query!(
             r#"
         update scores
         set score = score + ?
@@ -86,7 +96,11 @@ impl BotDb {
         )
         .execute(&self.db)
         .await
-        .unwrap();
+        {
+            // FIXME: this will not actually emit an error if there is no score to change.
+            Ok(_) => return Ok(()),
+            Err(_) => return Err(error::BotDbError::NoSuchScore),
+        };
     }
 
     pub async fn create_team(&self, guild: GuildId, team_name: &str, leader: UserId) {

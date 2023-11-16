@@ -147,3 +147,17 @@ async fn zero_score(pool: SqlitePool) -> sqlx::Result<()> {
 
     Ok(())
 }
+
+#[sqlx::test(migrations = "./migrations")]
+async fn no_such_score(pool: SqlitePool) -> sqlx::Result<()> {
+    let db_handler = crate::db::BotDb::from(pool.clone());
+
+    let score = db_handler.get_score(TEST_USER_ID, TEST_GUILD_ID).await;
+
+    match score {
+        Err(_) => {}
+        Ok(_) => panic!("There should have been an error here"),
+    }
+
+    Ok(())
+}
